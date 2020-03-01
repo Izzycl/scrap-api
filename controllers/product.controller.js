@@ -48,7 +48,7 @@ productCtrl.getProducts = async (req, res) => {
           
 
             async function getall(qpag) {
-                for (let index = 1; index <= qpag; index++) {
+                for (let index = 1; index <= 1; index++) {
                     const uri = uriorigin + index;
                     var data = await getData(uri);
                     alldata.push.apply(alldata, data);

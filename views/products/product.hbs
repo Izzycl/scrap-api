@@ -1,8 +1,12 @@
+<div class="row row-cols-md-12 d-flex justify-content-center  align-content-md-center">
+  <h4 class="text-white">Cantidad total: {{alldata.length}}</h4>
+</div>
+
 <div class="row row-cols-1 row-cols-md-3">
-    {{#each alldata}}
+  {{#each alldata}}
   <div class="col mb-4">
     <div class="card">
-        <img src="{{this.thumbs}}" class="card-img-top">
+      <img src="{{this.thumbs}}" class="card-img-top">
       <div class="card-body">
         <h5 class="card-title">{{this.title}}</h5>
         <p class="card-text">Precio: {{this.price}}</p>
@@ -10,5 +14,5 @@
       </div>
     </div>
   </div>
-    {{/each}}
+  {{/each}}
 </div>
