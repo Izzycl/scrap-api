@@ -5,7 +5,7 @@ const productCtrl = {};
 productCtrl.getProducts = async (req, res) => {
 
     //obtencion de busqueda por url
-    const { key }  = req.params
+    const key = req.query.key
     var uriorigin = `https://www.yapo.cl/chile?q=${key}&cmn=&o=`;
     console.log(uriorigin);
 
@@ -42,7 +42,10 @@ productCtrl.getProducts = async (req, res) => {
                 qpag = qpag + 1;
             }
 
-            var alldata = [];
+            var alldata = []
+              
+
+          
 
             async function getall(qpag) {
                 for (let index = 1; index <= qpag; index++) {
@@ -50,8 +53,9 @@ productCtrl.getProducts = async (req, res) => {
                     var data = await getData(uri);
                     alldata.push.apply(alldata, data);
                 }
-                res.send(alldata)
-                console.log(alldata.length);
+                res.render('products/product',{alldata})
+                
+                
             }
             getall(qpag);
         }
@@ -80,6 +84,8 @@ productCtrl.getProducts = async (req, res) => {
             }
 
 
+           
+
 
             $('tr[class="ad listing_thumbs"]').each(function (index, element) {
 
@@ -96,9 +102,9 @@ productCtrl.getProducts = async (req, res) => {
                     refLink = $(element).find('a[class="redirect-to-url"]').attr('href');
 
                     if (!$(element).find('td > div > div > div > img[class="image"]').attr('src')) {
-                        refThumbs = "assets/prod_default.png";
+                        refThumbs = "/prod_default.png";
                     } else {
-                        refThumbs = $(element).find('td > div > div > div > img[class="image"]').attr('src').trim()
+                        refThumbs = $(element).find('td > div > div > div > img[class="image"]').attr('src').trim().replace('thumbsli','images')
                     }
 
                     if (!$(element).find('td > span[class="price"]').html()) {

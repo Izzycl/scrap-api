@@ -4,7 +4,7 @@ const router = Router();
 const { getProducts } = require('../controllers/product.controller');
 
 
-router.route('/:key')
+router.route('/')
     .get(getProducts);
 
 
