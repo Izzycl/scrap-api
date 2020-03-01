@@ -5,7 +5,9 @@
   "main": "index2.js",
   "scripts": {
     "dev": "nodemon index.js",
-    "start": "cross-env NODE_ENV=production node index.js"
+    "server": "node index.js",
+    "client": "npm run start --prefix client",
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client"
   },
   "author": "",
   "license": "ISC",
