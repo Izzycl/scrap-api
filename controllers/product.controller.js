@@ -1,17 +1,19 @@
 const axios = require('axios');
 const cheerio = require('cheerio')
+const iconv = require('iconv-lite');
 const productCtrl = {};
-
 productCtrl.getProducts = async (req, res) => {
 
     //obtencion de busqueda por url
-    const key = req.query.key
+    var key = req.query.key;
+    var sortby = req.query.sortby;
     var uriorigin = `https://www.yapo.cl/chile?q=${key}&cmn=&o=`;
     console.log(uriorigin);
 
     try {
         const response = await axios({
             url: uriorigin,
+            responseType: 'arraybuffer'
         })
         const html = response.data;
         var $ = cheerio.load(html);
@@ -38,24 +40,36 @@ productCtrl.getProducts = async (req, res) => {
 
             var qpag = Math.floor(productquantity / 50);
 
-            if (qpag === 0) {
+            const resto = productquantity % 50;
+            console.log('ewa '+resto);
+
+            console.log(qpag);
+            if (resto < 50 && resto > 0) {
                 qpag = qpag + 1;
             }
 
             var alldata = []
-              
-
-          
 
             async function getall(qpag) {
-                for (let index = 1; index <= 1; index++) {
+                for (let index = 1; index <= qpag; index++) {
                     const uri = uriorigin + index;
                     var data = await getData(uri);
                     alldata.push.apply(alldata, data);
                 }
-                res.render('products/product',{alldata})
+
                 
+                // if(sortby==='max'){
+                //     alldata.sort(function(a, b){return b.price-a.price}); 
+                //     res.render('products/product', { alldata })
+                // }else if(sortby==='min'){
+                //     alldata.sort(function(a, b){return a.price-b.price}); 
+                //     res.render('products/product', { alldata })
+                // }else if(sortby==='none'){
+                //     res.render('products/product', { alldata })
+                // }
+                res.send(alldata)
                 
+
             }
             getall(qpag);
         }
@@ -64,27 +78,31 @@ productCtrl.getProducts = async (req, res) => {
         console.log(error);
     }
 
-
     async function getData(uri) {
         try {
             const response = await axios({
                 url: uri,
+                responseType: 'arraybuffer'
             })
-            const html = response.data;
-            const $ = cheerio.load(html);
+     
+            const html = iconv.decode(response.data, 'ISO-8859-1');
+            const $ = cheerio.load(html, { decodeEntities: false });
+
 
             var aData = [];
 
-            function Data(id, title, thumbs, link, price) {
+            function Data(id, title, thumbs, link, price, place, date) {
                 this.id = id;
                 this.title = title;
                 this.thumbs = thumbs;
                 this.link = link;
                 this.price = price;
+                this.place = place;
+                this.date = date;
             }
 
 
-           
+
 
 
             $('tr[class="ad listing_thumbs"]').each(function (index, element) {
@@ -94,31 +112,35 @@ productCtrl.getProducts = async (req, res) => {
                 var refThumbs = "";
                 var refLink = "";
                 var refPrice = "";
+                var refPlace = "";
+                var refDate = "";
 
 
                 try {
                     refId = $(element).attr('id');
                     refTitle = $(element).find('td > a[class="title"]').html();
                     refLink = $(element).find('a[class="redirect-to-url"]').attr('href');
-
+                    refPlace = $(element).find('td > p > span[class="region"]').html() + ' en la comuna de ' + $(element).find('td > p > span[class="commune"]').html();
+                    refDate = $(element).find('td > span[class="date"]').html() + ' a las ' + $(element).find('td > span[class="hour"]').html();
                     if (!$(element).find('td > div > div > div > img[class="image"]').attr('src')) {
-                        refThumbs = "/prod_default.png";
+                        refThumbs = "https://www.yapo.cl/img/prod_default.jpg";
                     } else {
-                        refThumbs = $(element).find('td > div > div > div > img[class="image"]').attr('src').trim().replace('thumbsli','images')
+                        refThumbs = $(element).find('td > div > div > div > img[class="image"]').attr('src').trim().replace('thumbsli', 'images')
                     }
 
                     if (!$(element).find('td > span[class="price"]').html()) {
-                        refPrice = 'no price'
+                        refPrice = '0'
                     } else {
                         refPrice = $(element).find('td > span[class="price"]').html().trim();
+                        const regprice = /[^0-9]/gm;
+                        refPrice = refPrice.replace(regprice,'');
                     }
-
 
                 } catch (error) {
                     console.log(error);
                 }
 
-                aData.push(new Data(refId, refTitle, refThumbs, refLink, refPrice));
+                aData.push(new Data(refId, refTitle, refThumbs, refLink, refPrice, refPlace, refDate));
 
 
             });

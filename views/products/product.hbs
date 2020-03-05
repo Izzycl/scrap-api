@@ -1,7 +1,3 @@
-<div class="row row-cols-md-12 d-flex justify-content-center  align-content-md-center">
-  <h4 class="text-white">Cantidad total: {{alldata.length}}</h4>
-</div>
-
 <div class="row row-cols-1 row-cols-md-3">
   {{#each alldata}}
   <div class="col mb-4">
@@ -9,7 +5,9 @@
       <img src="{{this.thumbs}}" class="card-img-top">
       <div class="card-body">
         <h5 class="card-title">{{this.title}}</h5>
-        <p class="card-text">Precio: {{this.price}}</p>
+        <p class="card-text" value='{{this.price}}'>Precio: {{this.price}}</p>
+         <p class="card-text">Lugar: {{this.place}}</p>
+          <p class="card-text">Date: {{this.date}}</p>
         <a class="btn btn-primary" href="{{this.link}}" role="button" target="_blank">Link</a>
       </div>
     </div>

@@ -1,8 +1,9 @@
 const express = require('express');
 const path = require('path');
 const app = express();
+const cors = require('cors')
 const exphbs  = require('express-handlebars');
-
+var qua = '';
 //settings
 app.set('port', process.env.PORT || 4000);
 app.set('views', path.join(__dirname, 'views'));
@@ -13,10 +14,11 @@ app.engine('.hbs', exphbs({
   extname: '.hbs'
 }));
 app.set('view engine', '.hbs');
-
 app.use(express.static('views/assets')); 
+app.use(cors())
+
 //middlerwares
-app.use(express.json());
+
 
 
 //routes
