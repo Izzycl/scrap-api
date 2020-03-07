@@ -5,8 +5,9 @@ const productCtrl = {};
 productCtrl.getProducts = async (req, res) => {
 
     //obtencion de busqueda por url
-    var key = req.query.key;
+    var key = req.query.key
     var sortby = req.query.sortby;
+    console.log(sortby);
     var uriorigin = `https://www.yapo.cl/chile?q=${key}&cmn=&o=`;
     console.log(uriorigin);
 
@@ -22,7 +23,7 @@ productCtrl.getProducts = async (req, res) => {
         var checkproducts = await $('table[class="TabContainer"] > tbody > tr').find('td > h1').html();
 
         if (checkproducts === 'No se encontraron entradas') {
-            res.send({ 'message': 'no entries found' })
+            res.send({"notfound": "https://http.cat/204"});
         } else {
             extractProduct();
         }
@@ -41,7 +42,7 @@ productCtrl.getProducts = async (req, res) => {
             var qpag = Math.floor(productquantity / 50);
 
             const resto = productquantity % 50;
-            console.log('ewa '+resto);
+            console.log('ewa ' + resto);
 
             console.log(qpag);
             if (resto < 50 && resto > 0) {
@@ -57,18 +58,17 @@ productCtrl.getProducts = async (req, res) => {
                     alldata.push.apply(alldata, data);
                 }
 
-                
-                // if(sortby==='max'){
-                //     alldata.sort(function(a, b){return b.price-a.price}); 
-                //     res.render('products/product', { alldata })
-                // }else if(sortby==='min'){
-                //     alldata.sort(function(a, b){return a.price-b.price}); 
-                //     res.render('products/product', { alldata })
-                // }else if(sortby==='none'){
-                //     res.render('products/product', { alldata })
-                // }
-                res.send(alldata)
-                
+
+                if (sortby === 'max') {
+                    alldata.sort(function (a, b) { return b.price - a.price });
+                    res.send(alldata)
+                } else if (sortby === 'min') {
+                    alldata.sort(function (a, b) { return a.price - b.price });
+                    res.send(alldata)
+                } else if (sortby === 'none') {
+                    res.send(alldata)
+                }
+
 
             }
             getall(qpag);
@@ -84,7 +84,7 @@ productCtrl.getProducts = async (req, res) => {
                 url: uri,
                 responseType: 'arraybuffer'
             })
-     
+
             const html = iconv.decode(response.data, 'ISO-8859-1');
             const $ = cheerio.load(html, { decodeEntities: false });
 
@@ -100,10 +100,6 @@ productCtrl.getProducts = async (req, res) => {
                 this.place = place;
                 this.date = date;
             }
-
-
-
-
 
             $('tr[class="ad listing_thumbs"]').each(function (index, element) {
 
@@ -133,7 +129,7 @@ productCtrl.getProducts = async (req, res) => {
                     } else {
                         refPrice = $(element).find('td > span[class="price"]').html().trim();
                         const regprice = /[^0-9]/gm;
-                        refPrice = refPrice.replace(regprice,'');
+                        refPrice = refPrice.replace(regprice, '');
                     }
 
                 } catch (error) {
@@ -149,8 +145,6 @@ productCtrl.getProducts = async (req, res) => {
             res.send(error)
         }
     }
-
-
 
 }
 
