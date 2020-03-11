@@ -1,0 +1,8 @@
+{
+    "appService.zipIgnorePattern": [
+        "node_modules{,/**}",
+        ".vscode{,/**}"
+    ],
+    "appService.defaultWebAppToDeploy": "/subscriptions/8b00f319-61ec-4567-9a91-e52854bab2c5/resourceGroups/rg-apiscrap/providers/Microsoft.Web/sites/scrapyapotest",
+    "appService.deploySubpath": ""
+}
